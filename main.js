@@ -73,3 +73,4 @@ var stone = new resource("stone")
 var leather = new advancedResource("leather")
 const makeLeather = new convertResources(-1,-1,-1,1)
 console.log(leather)
+asdfjskdfjlskjf
