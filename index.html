@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="interface.css" />
+    <title>
+        Welcome to my Idle Game
+    </title>
+</head>
+<body>
+    <h2>Basic Resources</h2>
+    <table id="basicResources">
+        <tr>
+            <td><button type="button" name="foodButton" onclick="food.gather()">Gather Food</button></td>
+            <td><span id="food">0</span></td>
+        </tr> 
+
+        <tr>
+            <td><button type="button" name="woodButton" onclick="wood.gather()">Gather Wood</button></td>
+            <td><span id="wood">0</span></td>  
+        </tr>  
+
+        <tr>
+            <td><button type="button" name="stoneButton" onclick="stone.gather()">Gather Stone</button></td>
+            <td><span id="stone">0</span></td>
+        </tr>       
+
+    </table>
+    
+    <h2>Advanced Resources</h2>
+    <table id="advancedResources">
+        <tr>
+            <td><button type="button" name="leatherButton" onclick="makeLeather.convert()">Make Leather</button></td>
+            <td><span id="leather">0</span></td>
+        </tr> 
+
+    </table>
+
+
+
+
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+
+</html>
