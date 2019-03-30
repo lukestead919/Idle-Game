@@ -10,17 +10,17 @@
     <h2>Basic Resources</h2>
     <table id="basicResources">
         <tr>
-            <td><button type="button" name="foodButton" onclick="food.gather()">Gather Food</button></td>
+            <td><button type="button" id="foodButton" onclick="food.gather()">Gather Food</button></td>
             <td><span id="food">0</span></td>
         </tr> 
 
         <tr>
-            <td><button type="button" name="woodButton" onclick="wood.gather()">Gather Wood</button></td>
+            <td><button type="button" id="woodButton" onclick="wood.gather()">Gather Wood</button></td>
             <td><span id="wood">0</span></td>  
         </tr>  
 
         <tr>
-            <td><button type="button" name="stoneButton" onclick="stone.gather()">Gather Stone</button></td>
+            <td><button type="button" id="stoneButton" onclick="stone.gather()">Gather Stone</button></td>
             <td><span id="stone">0</span></td>
         </tr>       
 
@@ -29,7 +29,7 @@
     <h2>Advanced Resources</h2>
     <table id="advancedResources">
         <tr>
-            <td><button type="button" name="leatherButton" onclick="makeLeather.convertResources()">Make Leather</button></td>
+            <td><button type="button" id="leatherButton" onclick="makeLeather.convertResources()">Make Leather</button></td>
             <td><span id="leather">0</span></td>
         </tr> 
 
@@ -38,7 +38,7 @@
     <h2>Buildings</h2>
     <table id="Buildings">
         <tr>
-            <td><button type="button" name="buildHouse" onclick="house.build()">Build House</button></td>
+            <td><button type="button" id="houseButton" onclick="house.build()" disabled=true>Build House</button></td>
             <td><span id="house">0</span></td>
         </tr> 
 
