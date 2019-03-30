@@ -3,6 +3,10 @@
 resourceList = []
 // will contain food, wood etc (not the strings)
 
+
+resourceConversionList = []
+
+
 buildingList = []
 
 
@@ -42,13 +46,14 @@ class advancedResource extends resource {
 
 
 class convertResources {
-    constructor(changeFood, changeWood, changeStone, changeLeather) {
+    constructor(name, changeFood, changeWood, changeStone, changeLeather) {
         
-
+        this.name = name
         this.changeFood = changeFood,
         this.changeWood = changeWood,
         this.changeStone = changeStone,
         this.changeLeather = changeLeather
+        resourceConversionList.push(this)
     }
 
     convertResources() {  // perform the conversion if possible
@@ -195,6 +200,20 @@ function updateButtonEnabledOrDisabled() {
             document.getElementById(A.name + "Button").disabled = true
         }
     }
+
+    for (let i=0; i<resourceConversionList.length; ++i) {
+
+        A = resourceConversionList[i]
+        
+        if (checkResources(A.changeFood, A.changeWood, A.changeStone, A.changeLeather) == true) 
+        {
+            document.getElementById(A.name + "Button").disabled = false
+        } 
+        else {
+            document.getElementById(A.name + "Button").disabled = true
+        }
+
+    }
 }
 
 
@@ -210,11 +229,12 @@ var food = new resource("food")
 var wood = new resource("wood")
 var stone = new resource("stone")
 
-
 var leather = new advancedResource("leather")
 
+
+//-------------------------------------------------------------------------------------------------------
 // *** add new methods of converting resources here
-const makeLeather = new convertResources(-1,-1,-1,1)
+const makeLeather = new convertResources("makeLeather", -1,-1,-1,1)
 
 
 //-------------------------------------------------------------------------------------------------------
