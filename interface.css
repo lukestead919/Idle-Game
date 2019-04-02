@@ -1,7 +1,22 @@
+body{
+    margin: 20px
+}
 button{
     height:40px; width:90px
 }
 
 #hiddenButton{
     display: none
+}
+
+.jobButton{
+    height:20px; width: 60px
+}
+
+#hire{
+    height:20px; width: 120px
+}
+
+table{
+    border-spacing: 10px 2px
 }

@@ -7,44 +7,72 @@
     </title>
 </head>
 <body>
-    <h2>Basic Resources</h2>
-    <table id="basicResources">
-        <tr>
-            <td><button type="button" id="foodButton" onclick="food.gather()">Gather Food</button></td>
-            <td><span id="food">0</span></td>
-        </tr> 
+    <div id="column 1" style="float:left">
+        <h2>Basic Resources</h2>
+        <table id="basicResources">
+            <tr id="food">
+                <td><button type="button" id="foodButton" onclick="food.gather()">Gather Food</button></td>
+                <td><span id="foodQuantity">0</span> / <span id="foodMax"></span></td>
+                <td>(<span id="foodPassiveGeneration"></span>/s)</td>
+            </tr> 
 
-        <tr>
-            <td><button type="button" id="woodButton" onclick="wood.gather()">Gather Wood</button></td>
-            <td><span id="wood">0</span></td>  
-        </tr>  
+            <tr id="wood">
+                <td><button type="button" id="woodButton" onclick="wood.gather()">Gather Wood</button></td>
+                <td><span id="woodQuantity">0</span> / <span id="woodMax"></span></td>
+                <td>(<span id="woodPassiveGeneration"></span>/s)</td>
+            </tr>  
 
-        <tr>
-            <td><button type="button" id="stoneButton" onclick="stone.gather()">Gather Stone</button></td>
-            <td><span id="stone">0</span></td>
-        </tr>       
+            <tr id="leather">
+                <td><button type="button" id="stoneButton" onclick="stone.gather()">Gather Stone</button></td>
+                <td><span id="stoneQuantity">0</span> / <span id="stoneMax"></span></td>
+                <td>(<span id="stonePassiveGeneration"></span>/s)</td>
+            </tr>       
 
-    </table>
+        </table>
+        
+        <h2>Advanced Resources</h2>
+        <table id="advancedResources">
+            <tr id="leather">
+                <td><button type="button" id="makeLeatherButton" onclick="makeLeather.convertResources()">Make Leather</button></td>
+                <td><span id="leatherQuantity">0</span> / <span id="leatherMax"></span></td>
+                <td>(<span id="leatherPassiveGeneration"></span>/s)</td>
+            </tr> 
+
+        </table>
+
+        <h2>Buildings</h2>
+        <table id="buildingsTable">
+        </table>
+    </div>
+
+
+    <div id="column 2" style="float:left; margin-left:100px">
+        <h2>Population</h2>
+        <table id="populationTable">
+                
+            
+            <tr>
+                <td>Population: <span id="population">0</span> / <span id="maxPopulation">0</span></td>
+            </tr>
+            <tr>
+                <td>
+                    Unemployed
+                </td>
+                <td>
+                        <span id="unemployed">0</span>
+                </td>
+                <td>
+                        <button type="button" id="hire" onclick="recruit()">Create Worker</button>
+                </td>
+            </tr>
+        </table>
+
+        <h2>Jobs</h2>
+        <table id="jobsTable">
+            
+        </table>
+    </div>  
     
-    <h2>Advanced Resources</h2>
-    <table id="advancedResources">
-        <tr>
-            <td><button type="button" id="leatherButton" onclick="makeLeather.convertResources()">Make Leather</button></td>
-            <td><span id="leather">0</span></td>
-        </tr> 
-
-    </table>
-
-    <h2>Buildings</h2>
-    <table id="Buildings">
-        <tr>
-            <td><button type="button" id="houseButton" onclick="house.build()" disabled=true>Build House</button></td>
-            <td><span id="house">0</span></td>
-        </tr> 
-
-    </table>
-
-
 
 
     <script type="text/javascript" src="main.js"></script>
