@@ -20,7 +20,7 @@ jobList = []
 class resource {
     constructor(name) {
         this.name = name,
-        this.quantity = 100
+        this.quantity = 800
         this.increment = 1
         this.passiveGeneration = 1
         this.maxStorage = 1000
@@ -97,8 +97,8 @@ class building {
     }
 
     build() {
-        if (checkResources(this.foodCost, this.woodCost, this.stoneCost, this.leatherCost) == true) {
-            convert(this.foodCost, this.woodCost, this.stoneCost, this.leatherCost)
+        if (checkResources(-this.foodCost, -this.woodCost, -this.stoneCost, -this.leatherCost) == true) {
+            convert(-this.foodCost, -this.woodCost, -this.stoneCost, -this.leatherCost)
             this.quantity += 1
             this.updateBuildCost()
             calculateMaxPopulation()
@@ -108,7 +108,7 @@ class building {
 }
 
 class dwelling extends building {
-    constructor(name, foodCost, woodCost, stoneCost, leatherCost, costMultiplier, increaseMaxPopulation) {
+    constructor(name, displayName, foodCost, woodCost, stoneCost, leatherCost, costMultiplier, increaseMaxPopulation) {
         super(name, foodCost, woodCost, stoneCost, leatherCost, costMultiplier)
         this.increaseMaxPopulation = increaseMaxPopulation
     }
@@ -116,20 +116,23 @@ class dwelling extends building {
 
 
 class research {
-    constructor(researchName, effect) {
-        this.researched = false
-        this.researchName = researchName
-        this.effect = effect
+    constructor(name, displayName, foodCost, woodCost, stoneCost, leatherCost) {
+        this.researched = 0
+        this.name = name
+        this.displayName = displayName
+        this.foodCost = foodCost
+        this.woodCost = woodCost
+        this.stoneCost = stoneCost
+        this.leatherCost = leatherCost
         researchList.push(this)
 
     }
 
     completeResearch() {
-        if (this.researched == false) {
-            this.researched = true
-            for (var i=0; i<this.effect.length; ++i) {
-                this.effect[i]
-            }
+        if (this.researched == 0 && checkResources(-this.foodCost, -this.woodCost, -this.stoneCost, -this.leatherCost)) {
+            convert(-this.foodCost, -this.woodCost, -this.stoneCost, -this.leatherCost)
+            this.researched = 1
+            document.getElementById(this.name).style.display = "none"
         }
     }
     
@@ -139,7 +142,6 @@ class job {
     constructor(name) {
         this.name = name
         this.quantity = 0
-        this.generation = 1
         jobList.push(this)
     }
 
@@ -148,6 +150,8 @@ class job {
             unemployed += -1
             this.quantity += 1
             updateJobTotalDisplays()
+            updatePassiveGeneration()
+            updateResourceDisplays()
         }
     }
 
@@ -156,6 +160,8 @@ class job {
             unemployed += 1
             this.quantity += -1
             updateJobTotalDisplays()
+            updatePassiveGeneration()
+            updateResourceDisplays()
         }
     }
 }
@@ -233,7 +239,7 @@ function updateButtonEnabledOrDisabled() {
 
         A = buildingList[i]
 
-        if (checkResources(A.foodCost, A.woodCost, A.stoneCost, A.leatherCost) == true) 
+        if (checkResources(-A.foodCost, -A.woodCost, -A.stoneCost, -A.leatherCost) == true) 
         {
             document.getElementById(A.name + "Button").disabled = false
         } 
@@ -253,9 +259,41 @@ function updateButtonEnabledOrDisabled() {
         else {
             document.getElementById(A.name + "Button").disabled = true
         }
-
     }
+    
+    if (population == maxPopulation || food.quantity < recruitCost) {
+        document.getElementById("recruit").disabled = true
+    } else {
+        document.getElementById("recruit").disabled = false
+    }
+
+    for (var i=0; i<jobList.length; ++i) {
+        B=jobList[i]
+        if (unemployed == 0) {
+            document.getElementById(B.name+"HireButton").disabled = true
+        } else {
+            document.getElementById(B.name+"HireButton").disabled = false
+        }
+
+        if (B.quantity == 0) {
+            document.getElementById(B.name+"FireButton").disabled = true
+        } else {
+            document.getElementById(B.name+"FireButton").disabled = false
+        }
+    }
+
+    for (var i=0; i<researchList.length; ++i) {
+        B=researchList[i]
+        if (checkResources(-B.foodCost, -B.woodCost, -B.stoneCost, -B.leatherCost)) {
+            document.getElementById(B.name+"ResearchButton").disabled = false
+        } else {
+            document.getElementById(B.name+"ResearchButton").disabled = true
+        }
+
+        
+    } 
 }
+
 
 
 function updateGUI() {
@@ -270,22 +308,73 @@ function calculateMaxPopulation() {
     document.getElementById("maxPopulation").innerHTML = maxPopulation
 }
 
+
+var recruitCost = 50
 function recruit() {
-    if (food.quantity >= 50 && population < maxPopulation) {
-        food.quantity += -50
+    if (food.quantity >= recruitCost && population < maxPopulation) {
+        food.quantity += -recruitCost
         unemployed += 1 
         population += 1
         document.getElementById("population").innerHTML = population
+        updatePassiveGeneration()
         updateGUI()
     }
 }
 
+
 function calculateFoodPassiveGen() {
     var a
-    a = (farmer.quantity * farmer.generation) - 3*population
-    food.passiveGeneration = a
+    a = (farmer.quantity * (farmer.generation + granary.quantity/10 + simpleTools.researched)) - 3*population
+    food.passiveGeneration = Math.round(a)
 }
 
+function calculateWoodPassiveGen() {
+    var a 
+    a = woodcutter.quantity * (1 + simpleTools.researched/2)
+    wood.passiveGeneration = Math.round(a)
+}
+
+function calculateStonePassiveGen() {
+    var a 
+    a = miner.quantity * (1 + simpleTools.researched/2)
+    stone.passiveGeneration = Math.round(a)
+}
+
+function updatePassiveGeneration() {
+    calculateFoodPassiveGen()
+    calculateWoodPassiveGen()
+    calculateStonePassiveGen()
+}
+
+function foodStorage() {
+    1000 + 500*granary.quantity
+}
+
+
+
+
+
+function selectPane(name) {
+    if (name == 'population') {
+        document.getElementById('populationPane').style.display = "block"
+        document.getElementById('researchPane').style.display = "none"
+
+        document.getElementById('populationSelector').class = "selector selected"
+        document.getElementById('populationSelector').disabled = true
+        document.getElementById('researchSelector').class = "selector"
+        document.getElementById('researchSelector').disabled = false
+    }
+
+    if (name == 'research') {
+        document.getElementById('populationPane').style.display = "none"
+        document.getElementById('researchPane').style.display = "block"
+
+        document.getElementById('populationSelector').class = "selector"
+        document.getElementById('populationSelector').disabled = false
+        document.getElementById('researchSelector').class = "selector selected"
+        document.getElementById('researchSelector').disabled = true
+    }
+}
 
 //-------------------------------------------------------------------------------------------------------
 var food = new resource("food")
@@ -301,28 +390,22 @@ const makeLeather = new convertResources("makeLeather", -1,-1,-1,1)
 
 
 //-------------------------------------------------------------------------------------------------------
-// ***add new buildings here - (name, changeFood, changeWood, changeStone, changeLeather, costMultiplier)
+// ***add new buildings here - (name, foodCost, woodCost, stoneCost, leatherCost, costMultiplier)
 
 // house will increase max population
-var house = new building("house", -1, -1, -1, -1, 1.2)
+var house = new building("house", 1, 1, 1, 1, 1.2)
 
-// lumbermill will increase effectiveness of woodcutters
-var lumbermill = new building("lumbermill", 0, -50,-50, -15, 1.1)
-
-// quarry will increase effectiveness of miners
-var quarry = new building("quarry", 0, -60, -30, -10, 1.1)
+// granary increase food storage and slightly improve farmers
+var granary = new building("granary", 0, 30, 80, 0, 1.2)
 
 // woodstores will increase wood max storage 
-var woodstores = new building("woodstores", 0, -80, 0, 0, 1.1)
+var woodstores = new building("woodstores", 0, 80, 0, 0, 1.1)
 
+// lumbermill will increase effectiveness of woodcutters
+var lumbermill = new building("lumbermill", 0, 50, 50, 15, 1.1)
 
-
-
-//-------------------------------------------------------------------------------------------------------
-// add technologies/research here
-var unlockHouse = new research("freeHouses", [house.quantity = 1, house.costMultiplier = 1])
-
-unlockHouse.completeResearch()
+// quarry will increase effectiveness of miners
+var quarry = new building("quarry", 0, 60, 30, 10, 1.1)
 
 
 
@@ -336,6 +419,14 @@ farmer.generation = 4
 var woodcutter = new job("woodcutter")
 
 var miner = new job('miner')
+
+
+
+//-------------------------------------------------------------------------------------------------------
+// add technologies/research here
+var unlockHouse = new research("unlockHouse", "Houses", 300, 100, 100, 0)
+
+var simpleTools = new research("simpleTools", "Simple Tools", 0, 500, 500, 300)
 
 
 //-------------------------------------------------------------------------------------------------------
@@ -447,6 +538,41 @@ function populateJobs() {
 }
 populateJobs()
 
+
+function populateResearch() {
+    for (var i=0; i<researchList.length; ++i) {
+        B = researchList[i]
+        console.log(B)
+        // create a new table row and add to jobs table
+        var table = document.getElementById("researchTable")
+        var tr = document.createElement("tr")
+        tr.id = B.name
+        table.appendChild(tr)
+
+        var td1 = document.createElement("td")
+        tr.appendChild(td1)
+        var text1 = document.createTextNode(B.displayName)
+        td1.appendChild(text1)
+        
+        // create new cell for button
+        var td2 = document.createElement("td")
+        tr.appendChild(td2)
+
+        var newbutton = document.createElement("button")
+        newbutton.type = "button"
+        newbutton.id = B.name + "ResearchButton"
+        newbutton.setAttribute("class", "researchButton")
+        newbutton.setAttribute('onclick', B.name + ".completeResearch()")
+
+        var text2 = document.createTextNode("Research")
+        
+
+        newbutton.appendChild(text2)
+        td2.appendChild(newbutton)
+    }
+}
+populateResearch()
+
 updateGUI()
 
 
@@ -456,7 +582,7 @@ window.setInterval(function(){
 
     calculateMaxPopulation()
 
-    calculateFoodPassiveGen()
+    updatePassiveGeneration()
     
 
 
