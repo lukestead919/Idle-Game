@@ -50,7 +50,7 @@ class advancedResource extends resource {
 
 
 class convertResources {
-    constructor(name, changeFood, changeWood, changeStone, changeLeather) {
+    constructor(name, {changeFood=0, changeWood=0, changeStone=0, changeLeather=0}) {
         
         this.name = name
         this.changeFood = changeFood,
@@ -73,12 +73,12 @@ class convertResources {
 
 
 class building {
-    constructor(name, initialFoodCost, initialWoodCost, initialStoneCost, initialLeatherCost, costMultiplier) {
+    constructor(name, {foodCost=0, woodCost=0, stoneCost=0, leatherCost=0}, costMultiplier=1) {
         this.name = name,
-        this.initialFoodCost = initialFoodCost
-        this.initialWoodCost = initialWoodCost
-        this.initialStoneCost = initialStoneCost
-        this.initialLeatherCost = initialLeatherCost
+        this.initialFoodCost = foodCost
+        this.initialWoodCost = woodCost
+        this.initialStoneCost =stoneCost
+        this.initialLeatherCost = leatherCost
         this.costMultiplier = costMultiplier
         this.quantity = 0
         this.visible = false
@@ -107,16 +107,9 @@ class building {
     }
 }
 
-class dwelling extends building {
-    constructor(name, displayName, foodCost, woodCost, stoneCost, leatherCost, costMultiplier, increaseMaxPopulation) {
-        super(name, foodCost, woodCost, stoneCost, leatherCost, costMultiplier)
-        this.increaseMaxPopulation = increaseMaxPopulation
-    }
-}
-
 
 class research {
-    constructor(name, displayName, foodCost, woodCost, stoneCost, leatherCost) {
+    constructor(name, displayName, foodCost=0, woodCost=0, stoneCost=0, leatherCost=0) {
         this.researched = 0
         this.name = name
         this.displayName = displayName
@@ -149,9 +142,7 @@ class job {
         if (unemployed !== 0) {
             unemployed += -1
             this.quantity += 1
-            updateJobTotalDisplays()
-            updatePassiveGeneration()
-            updateResourceDisplays()
+            updateGUI()
         }
     }
 
@@ -159,9 +150,7 @@ class job {
         if (this.quantity !== 0) {
             unemployed += 1
             this.quantity += -1
-            updateJobTotalDisplays()
-            updatePassiveGeneration()
-            updateResourceDisplays()
+            updateGUI()
         }
     }
 }
@@ -282,6 +271,12 @@ function updateButtonEnabledOrDisabled() {
         }
     }
 
+    // can only have as many tanners as you have tanneries
+
+    if (tanner.quantity == tannery.quantity) {
+        document.getElementById("tannerHireButton").disabled = true
+    }
+
     for (var i=0; i<researchList.length; ++i) {
         B=researchList[i]
         if (checkResources(-B.foodCost, -B.woodCost, -B.stoneCost, -B.leatherCost)) {
@@ -340,10 +335,17 @@ function calculateStonePassiveGen() {
     stone.passiveGeneration = Math.round(a)
 }
 
+function calculateLeatherPassiveGen() {
+    var a 
+    a = tanner.quantity
+    leather.passiveGeneration = Math.round(a)
+}
+
 function updatePassiveGeneration() {
     calculateFoodPassiveGen()
     calculateWoodPassiveGen()
     calculateStonePassiveGen()
+    calculateLeatherPassiveGen()
 }
 
 function foodStorage() {
@@ -380,33 +382,33 @@ function selectPane(name) {
 var food = new resource("food")
 var wood = new resource("wood")
 var stone = new resource("stone")
-
 var leather = new advancedResource("leather")
 
 
 //-------------------------------------------------------------------------------------------------------
 // *** add new methods of converting resources here
-const makeLeather = new convertResources("makeLeather", -1,-1,-1,1)
+const makeLeather = new convertResources("makeLeather", {changeFood: -30, changeWood: -10, changeStone: -5, changeLeather: 1})
 
 
 //-------------------------------------------------------------------------------------------------------
-// ***add new buildings here - (name, foodCost, woodCost, stoneCost, leatherCost, costMultiplier)
+// ***add new buildings here - (name, {$resourceCost: cost}, costMultiplier)
 
 // house will increase max population
-var house = new building("house", 1, 1, 1, 1, 1.2)
+var house = new building("house", {woodCost: 50, stoneCost: 50}, 1.3)
 
 // granary increase food storage and slightly improve farmers
-var granary = new building("granary", 0, 30, 80, 0, 1.2)
+var granary = new building("granary", {woodCost: 30, stoneCost: 80}, 1.2)
 
 // woodstores will increase wood max storage 
-var woodstores = new building("woodstores", 0, 80, 0, 0, 1.1)
+var woodstores = new building("woodstores", {woodCost: 80, stoneCost:40}, 1.1)
 
 // lumbermill will increase effectiveness of woodcutters
-var lumbermill = new building("lumbermill", 0, 50, 50, 15, 1.1)
+var lumbermill = new building("lumbermill", {woodCost: 50, stoneCost: 50,leatherCost: 15}, 1.1)
 
 // quarry will increase effectiveness of miners
-var quarry = new building("quarry", 0, 60, 30, 10, 1.1)
+var quarry = new building("quarry", {woodCost: 60, stoneCost: 30, leatherCost: 10}, 1.1)
 
+var tannery = new building("tannery", {woodCost: 300, stoneCost: 150}, 1.2)
 
 
 //-------------------------------------------------------------------------------------------------------
@@ -419,6 +421,8 @@ farmer.generation = 4
 var woodcutter = new job("woodcutter")
 
 var miner = new job('miner')
+
+var tanner = new job('tanner')
 
 
 
